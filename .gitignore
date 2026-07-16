@@ -1,0 +1,49 @@
+#######################################
+# Dependencies
+#######################################
+node_modules/
+
+#######################################
+# Package Manager
+#######################################
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+#######################################
+# Build
+#######################################
+dist/
+build/
+out/
+coverage/
+storybook-static/
+
+#######################################
+# Cache
+#######################################
+.vite/
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+
+#######################################
+# Environment
+#######################################
+#.env.local
+#.env.development.local
+#.env.test.local
+#.env.production.local
+
+# 필요한 경우
+# .env
+
+#######################################
+# IDE
+#######################################
+.idea/
+*.iml

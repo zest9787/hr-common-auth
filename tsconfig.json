@@ -1,0 +1,4 @@
+{
+  "extends": "../hr-common-config/tsconfig/library.json",
+  "include": ["src", "vite.config.ts"]
+}
