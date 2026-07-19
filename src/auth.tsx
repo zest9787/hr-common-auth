@@ -26,21 +26,21 @@ const fallbackUser: CurrentUser = {
 const AuthContext = createContext<ReturnType<typeof createAuthValue> | null>(null);
 
 function createAuthValue(user: CurrentUser | undefined, logout: () => void) {
-  const currentUser = user ?? fallbackUser;
+  const currentUser = user;
   return {
     user: currentUser,
     isAuthenticated: Boolean(currentUser),
     logout,
-    hasPermission: (permission: string) => currentUser.permissions.includes(permission),
+    hasPermission: (permission: string) => currentUser?.permissions.includes(permission) ?? false,
     hasAnyPermission: (permissions: string[]) =>
-      permissions.some((permission) => currentUser.permissions.includes(permission)),
-    hasRole: (role: string) => currentUser.roles.includes(role),
+      permissions.some((permission) => currentUser?.permissions.includes(permission) ?? false),
+    hasRole: (role: string) => currentUser?.roles.includes(role) ?? false,
   };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
-  const { data } = useCurrentUser();
+  const { data, isError, isPending } = useCurrentUser();
   const logout = () => {
     void http.post("/auth/logout").finally(() => {
       queryClient.clear();
@@ -54,7 +54,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => authEvents.removeEventListener("unauthorized", handleUnauthorized);
   }, [queryClient]);
 
-  const value = useMemo(() => createAuthValue(data, logout), [data]);
+  const user = isPending ? fallbackUser : isError ? undefined : data;
+  const value = useMemo(() => createAuthValue(user, logout), [user]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
@@ -64,7 +65,6 @@ export function useCurrentUser() {
     queryFn: () => http.get<CurrentUser>("/auth/me"),
     staleTime: 60_000,
     retry: false,
-    placeholderData: fallbackUser,
   });
 }
 
